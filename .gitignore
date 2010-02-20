@@ -1,0 +1,4 @@
+*.gz
+*.old
+Makefile
+nytprof.out

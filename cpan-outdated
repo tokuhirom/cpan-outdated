@@ -1,0 +1,90 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Getopt::Long;
+use Pod::Usage;
+use LWP::Simple qw/mirror/;
+use IO::Zlib;
+use ExtUtils::MakeMaker;
+use CPAN::Version;
+
+our $VERSION = '0.01';
+
+my $url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
+my $homedir = $ENV{HOME} || eval { require File::HomeDir; File::HomeDir->my_home };
+
+GetOptions(
+    'h|help'  => \my $help,
+    'verbose' => \my $verbose,
+) or pod2usage();
+pod2usage() if $help;
+
+&main;exit;
+
+sub main {
+    my $cachefile = "$homedir/.cpan/sources/modules/02packages.details.txt.gz";
+    mirror($url, $cachefile) or die "Cannot mirror file";
+
+    my $fh = IO::Zlib->new($cachefile, "rb") or die "cannot open $cachefile";
+    # skip header part
+    while (my $line = <$fh>) {
+        last if $line eq "\n";
+    }
+    # body part
+    my %seen;
+    while (my $line = <$fh>) {
+        my ($pkg, $version, $dist) = split /\s+/, $line;
+        (my $file = $pkg) =~ s!::!/!g;
+        $file = "${file}.pm";
+        SCAN_INC: for my $dir (@INC) {
+            my $path = "$dir/$file";
+            next unless -f $path;
+            my $inst_version = MM->parse_version($path);
+               $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
+            if ($inst_version ne $version && CPAN::Version->vlt($inst_version, $version)) {
+                next if $seen{$dist}++;
+                if ($verbose) {
+                    printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
+                } else {
+                    print "$dist\n";
+                }
+            }
+            last SCAN_INC;
+        }
+    }
+}
+
+__END__
+
+=head1 NAMES
+
+cpan-outdated - detect outdated CPAN modules in your environment
+
+=head1 SYNOPSIS
+
+    # print list of outdated modules
+    % cpan-outdated
+
+    # verbose
+    % cpan-outdated --verbose
+
+    # install with cpan
+    % cpan-outdated | xargs cpan -i
+
+    # install with cpanm
+    % cpan-outdated | xargs cpanm
+
+=head1 AUTHOR
+
+Tokuhiro Matsuno
+
+=head1 LICENSE
+
+Copyright (C) 2009 Tokuhiro Matsuno.
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
+L<CPAN>
+
