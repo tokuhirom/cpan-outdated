@@ -34,6 +34,7 @@ sub main {
     my %seen;
     while (my $line = <$fh>) {
         my ($pkg, $version, $dist) = split /\s+/, $line;
+        next if $dist =~ m{/perl-\.[0-9._]+\.tar\.gz$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
         SCAN_INC: for my $dir (@INC) {
