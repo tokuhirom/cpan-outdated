@@ -42,6 +42,7 @@ sub main {
             next unless -f $path;
             my $inst_version = MM->parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
+            next if $inst_version eq 'undef';
             if ($inst_version ne $version && CPAN::Version->vlt($inst_version, $version)) {
                 next if $seen{$dist}++;
                 if ($verbose) {
