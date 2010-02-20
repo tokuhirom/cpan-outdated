@@ -74,6 +74,14 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # install with cpanm
     % cpan-outdated | xargs cpanm
 
+=head1 DESCRIPTION
+
+This module print list of outdated CPAN modules in your machine.
+
+It's same feature of 'CPAN::Shell->r', but cpan-outdated is so fast and less memory.
+
+This script can integrate with cpanm command.
+
 =head1 AUTHOR
 
 Tokuhiro Matsuno
@@ -88,3 +96,4 @@ This library is free software; you can redistribute it and/or modify it under th
 
 L<CPAN>
 
+=cut
