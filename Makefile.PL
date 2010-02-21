@@ -1,10 +1,10 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
-    NAME => 'App::cpanoutdated',
+    NAME         => 'App::cpanoutdated',
     VERSION_FROM => "cpan-outdated",
-    PREREQ_PM => {
-        'LWP' => 0,
+    PREREQ_PM    => {
+        'LWP'      => 0,
         'IO::Zlib' => 0,
     },
-    EXE_FILES => [ 'cpan-outdated' ],
+    EXE_FILES => ['cpan-outdated'],
 );
