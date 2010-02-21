@@ -24,6 +24,14 @@ It's same feature of 'CPAN::Shell->r', but cpan-outdated is so fast and less mem
 
 This script can integrate with cpanm command.
 
+# DEPENDENCIES
+
+perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't tested).
+
+- LWP or 'wget' to get a index file over HTTP.
+
+- IO::Zlib or 'zcat' to decode gziped index file.
+
 # AUTHOR
 
 Tokuhiro Matsuno
