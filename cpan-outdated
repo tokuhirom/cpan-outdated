@@ -3,15 +3,18 @@ use strict;
 use warnings;
 use Getopt::Long;
 use Pod::Usage;
-use LWP::Simple qw/mirror/;
-use IO::Zlib;
 use ExtUtils::MakeMaker;
 use CPAN::Version;
+use File::Temp;
+use File::Spec;
+use Config;
+use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = '0.01';
 
 my $url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
 my $homedir = $ENV{HOME} || eval { require File::HomeDir; File::HomeDir->my_home };
+my $quote = WIN32 ? q/"/ : q/'/;
 
 GetOptions(
     'h|help'  => \my $help,
@@ -22,10 +25,12 @@ pod2usage() if $help;
 &main;exit;
 
 sub main {
-    my $cachefile = "$homedir/.cpan/sources/modules/02packages.details.txt.gz";
-    mirror($url, $cachefile) or die "Cannot mirror file";
+    init_tools();
 
-    my $fh = IO::Zlib->new($cachefile, "rb") or die "cannot open $cachefile";
+    my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
+    getstore($url, $tmpfile->filename) or die "Cannot getstore file";
+
+    my $fh = zopen($tmpfile) or die "cannot open $tmpfile";
     # skip header part
     while (my $line = <$fh>) {
         last if $line eq "\n";
@@ -56,6 +61,51 @@ sub main {
     }
 }
 
+# taken from cpanminus
+sub which {
+    my($name) = @_;
+    my $exe_ext = $Config{_exe};
+    foreach my $dir(File::Spec->path){
+        my $fullpath = File::Spec->catfile($dir, $name);
+        if (-x $fullpath || -x ($fullpath .= $exe_ext)){
+            if ($fullpath =~ /\s/ && $fullpath !~ /^$quote/) {
+                $fullpath = "$quote$fullpath$quote"
+            }
+            return $fullpath;
+        }
+    }
+    return;
+}
+
+sub init_tools {
+    if (!$ENV{DEBUG_WGET} && eval { require LWP::Simple }) {
+        *getstore = sub { LWP::Simple::getstore(@_) == 200 };
+    } elsif (my $wget = which 'wget') {
+        *getstore = sub {
+            my($uri, $path) = @_;
+            return file_getstore($uri, $path) if $uri =~ s!^file:/+!/!;
+            system($wget, '--quiet', $uri, '-O', $path) == 0;
+        };
+    } else {
+        die "Cannot find LWP::Simple and wget.\n";
+    }
+
+    if (!$ENV{DEBUG_ZCAT} && eval { require IO::Zlib }) {
+        *zopen = sub {
+            IO::Zlib->new($_[0], "rb");
+        };
+    } elsif (my $zcat = which 'zcat') {
+        *zopen = sub {
+            my $file = shift;
+            open(my $fh, '-|', $zcat, $file)
+                or return;
+            return $fh;
+        };
+    } else {
+        die "Cannot find IO::Zlib or zcat.\n";
+    }
+}
+
 __END__
 
 =head1 NAMES
@@ -83,6 +133,18 @@ This module print list of outdated CPAN modules in your machine.
 It's same feature of 'CPAN::Shell->r', but cpan-outdated is so fast and less memory.
 
 This script can integrate with cpanm command.
+
+=head1 DEPENDENCIES
+
+perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't tested).
+
+=over 4
+
+=item LWP or 'wget' to get a index file over HTTP.
+
+=item IO::Zlib or 'zcat' to decode gziped index file.
+
+=back
 
 =head1 AUTHOR
 
