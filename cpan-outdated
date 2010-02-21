@@ -9,7 +9,7 @@ use File::Spec;
 use Config;
 use constant WIN32 => $^O eq 'MSWin32';
 
-my $url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
+my $index_url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
 my $quote = WIN32 ? q/"/ : q/'/;
 
 GetOptions(
@@ -24,7 +24,7 @@ sub main {
     init_tools();
 
     my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
-    getstore($url, $tmpfile->filename) or die "Cannot getstore file";
+    getstore($index_url, $tmpfile->filename) or die "Cannot getstore file";
 
     my $fh = zopen($tmpfile) or die "cannot open $tmpfile";
     # skip header part
