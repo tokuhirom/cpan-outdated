@@ -9,8 +9,6 @@ use File::Spec;
 use Config;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = '0.01';
-
 my $url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
 my $homedir = $ENV{HOME} || eval { require File::HomeDir; File::HomeDir->my_home };
 my $quote = WIN32 ? q/"/ : q/'/;
