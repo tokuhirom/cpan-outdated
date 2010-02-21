@@ -1,4 +1,11 @@
 *.gz
 *.old
+*.sw[po]
+MANIFEST.bak
+META.yml
 Makefile
+blib/
+inc/
 nytprof.out
+pm_to_blib
+MANIFEST
