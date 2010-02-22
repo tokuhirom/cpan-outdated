@@ -1,3 +1,8 @@
+0.02
+
+    - shut up warnings on v-string
+      (reported by aer0++)
+
 0.01
 
     - initial release
