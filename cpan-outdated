@@ -20,7 +20,10 @@ GetOptions(
 ) or pod2usage();
 pod2usage() if $help;
 
-&main;exit;
+unless ($ENV{HARNESS_ACTIVE}) {
+    &main;
+    exit;
+}
 
 sub main {
     init_tools();
@@ -112,7 +115,7 @@ package # # hide from pause
 # CPAN::Version::vcmp courtesy Jost Krieger
 sub vcmp {
     my($self,$l,$r) = @_;
-    local($^W) = 0;
+    no warnings 'numeric';
 
     return 0 if $l eq $r; # short circuit for quicker success
 
