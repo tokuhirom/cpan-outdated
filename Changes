@@ -1,3 +1,13 @@
+0.03
+
+    - added workaround for MM->parse_version() issue around Authen::Simple::Apache.
+      (The issue was reported to EU::MM authors)
+      (reported by rafl++)
+    - switch to version.pm instead of copied CPAN::Version.
+      Yes, it's not 5.8 core module.
+      But, if you want to use this command, you can install version.pm :P
+      (suggested by hanekomu++)
+
 0.02
 
     - shut up warnings on v-string
