@@ -1,3 +1,8 @@
+0.04
+
+    - oops. 0.03 is wrong release.
+      ( no feature changes)
+
 0.03
 
     - added workaround for MM->parse_version() issue around Authen::Simple::Apache.
