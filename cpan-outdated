@@ -111,11 +111,11 @@ sub init_tools {
 # Copyright: Andreas Koenig
 package # # hide from pause
     CPAN::Version;
+no warnings; # CPAN::Version does not say "use warnings"
 
 # CPAN::Version::vcmp courtesy Jost Krieger
 sub vcmp {
     my($self,$l,$r) = @_;
-    no warnings 'numeric';
 
     return 0 if $l eq $r; # short circuit for quicker success
 
