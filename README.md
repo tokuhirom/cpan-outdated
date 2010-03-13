@@ -32,6 +32,8 @@ perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't test
 
 - IO::Zlib or 'zcat' to decode gziped index file.
 
+- version.pm
+
 # AUTHOR
 
 Tokuhiro Matsuno

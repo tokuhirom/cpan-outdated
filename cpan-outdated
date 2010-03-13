@@ -47,7 +47,7 @@ sub main {
         SCAN_INC: for my $dir (@INC) {
             my $path = "$dir/$file";
             next unless -f $path;
-            my $inst_version = MM->parse_version($path);
+            my $inst_version = parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
             next if $inst_version eq 'undef';
             if ($inst_version ne $version && version->new($inst_version) < version->new($version)) {
@@ -61,6 +61,18 @@ sub main {
             last SCAN_INC;
         }
     }
+}
+
+sub parse_version {
+    my $path = shift;
+    local $SIG{__WARN__} = sub {
+        # This is workaround for EU::MM's issue.
+        # following one-liner makes too long warnings.
+        #   perl -e 'use ExtUtils::MM; MM->parse_version("/usr/local/app/perl-5.10.1/lib/site_perl/5.10.1/Authen/Simple/Apache.pm")'
+        return if @_ && $_[0] =~ /^Could not eval/;
+        CORE::warn(@_);
+    };
+    MM->parse_version($path);
 }
 
 # taken from cpanminus
@@ -145,6 +157,8 @@ perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't test
 =item LWP or 'wget' to get a index file over HTTP.
 
 =item IO::Zlib or 'zcat' to decode gziped index file.
+
+=item version.pm
 
 =back
 
