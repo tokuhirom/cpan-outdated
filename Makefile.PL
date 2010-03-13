@@ -7,5 +7,5 @@ WriteMakefile(
         'IO::Zlib' => 0,
         'version'  => 0,
     },
-    EXE_FILES => ['cpan-outdated'],
+    EXE_FILES => ['bin/cpan-outdated'],
 );
