@@ -7,6 +7,7 @@ use ExtUtils::MakeMaker;
 use File::Temp;
 use File::Spec;
 use Config;
+use version;
 use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.02";
@@ -49,7 +50,7 @@ sub main {
             my $inst_version = MM->parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
             next if $inst_version eq 'undef';
-            if ($inst_version ne $version && CPAN::Version->vlt($inst_version, $version)) {
+            if ($inst_version ne $version && version->new($inst_version) < version->new($version)) {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
@@ -105,98 +106,6 @@ sub init_tools {
     } else {
         die "Cannot find IO::Zlib or zcat.\n";
     }
-}
-
-### Inline stripped CPAN::Version
-# Copyright: Andreas Koenig
-package # # hide from pause
-    CPAN::Version;
-no warnings; # CPAN::Version does not say "use warnings"
-
-# CPAN::Version::vcmp courtesy Jost Krieger
-sub vcmp {
-    my($self,$l,$r) = @_;
-
-    return 0 if $l eq $r; # short circuit for quicker success
-
-    for ($l,$r) {
-        s/_//g;
-    }
-    for ($l,$r) {
-        next unless tr/.// > 1 || /^v/;
-        s/^v?/v/;
-        1 while s/\.0+(\d)/.$1/; # remove leading zeroes per group
-    }
-    if ($l=~/^v/ <=> $r=~/^v/) {
-        for ($l,$r) {
-            next if /^v/;
-            $_ = $self->float2vv($_);
-        }
-    }
-    my $lvstring = "v0";
-    my $rvstring = "v0";
-    if ($] >= 5.006
-     && $l =~ /^v/
-     && $r =~ /^v/) {
-        $lvstring = $self->vstring($l);
-        $rvstring = $self->vstring($r);
-    }
-
-    return (
-            ($l ne "undef") <=> ($r ne "undef")
-            ||
-            $lvstring cmp $rvstring
-            ||
-            $l <=> $r
-            ||
-            $l cmp $r
-    );
-}
-
-sub vgt {
-    my($self,$l,$r) = @_;
-    $self->vcmp($l,$r) > 0;
-}
-
-sub vlt {
-    my($self,$l,$r) = @_;
-    0 + ($self->vcmp($l,$r) < 0);
-}
-
-sub vge {
-    my($self,$l,$r) = @_;
-    $self->vcmp($l,$r) >= 0;
-}
-
-sub vle {
-    my($self,$l,$r) = @_;
-    0 + ($self->vcmp($l,$r) <= 0);
-}
-
-sub vstring {
-    my($self,$n) = @_;
-    $n =~ s/^v// or die "CPAN::Version::vstring() called with invalid arg [$n]";
-    pack "U*", split /\./, $n;
-}
-
-# vv => visible vstring
-sub float2vv {
-    my($self,$n) = @_;
-    my($rev) = int($n);
-    $rev ||= 0;
-    my($mantissa) = $n =~ /\.(\d{1,12})/; # limit to 12 digits to limit
-                                          # architecture influence
-    $mantissa ||= 0;
-    $mantissa .= "0" while length($mantissa)%3;
-    my $ret = "v" . $rev;
-    while ($mantissa) {
-        $mantissa =~ s/(\d{1,3})// or
-            die "Panic: length>0 but not a digit? mantissa[$mantissa]";
-        $ret .= ".".int($1);
-    }
-    # warn "n[$n]ret[$ret]";
-    $ret =~ s/(\.0)+/.0/; # v1.0.0 => v1.0
-    $ret;
 }
 
 __END__
