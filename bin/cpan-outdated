@@ -10,7 +10,7 @@ use Config;
 use version;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = "0.02";
+our $VERSION = "0.04";
 
 my $index_url = 'http://www.cpan.org/modules/02packages.details.txt.gz';
 my $quote = WIN32 ? q/"/ : q/'/;
