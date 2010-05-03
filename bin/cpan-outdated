@@ -4,7 +4,6 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use ExtUtils::MakeMaker;
-use File::Copy;
 use File::Temp;
 use File::Spec;
 use Config;
@@ -127,6 +126,7 @@ sub init_tools {
 
 sub file_getstore {
     my ($self, $uri, $path) = @_;
+    require File::Copy;
     File::Copy::copy($uri, $path);
 }
 
@@ -172,8 +172,6 @@ perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't test
 =item IO::Zlib or 'zcat' to decode gziped index file.
 
 =item version.pm
-
-=item File::Copy for file:// mirror urls
 
 =back
 
