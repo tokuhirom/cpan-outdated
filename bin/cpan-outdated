@@ -144,6 +144,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # verbose
     % cpan-outdated --verbose
 
+    # alternate mirrors
+    % cpan-outdated --mirror file:///home/user/minicpan/
+
     # install with cpan
     % cpan-outdated | xargs cpan -i
 
@@ -169,6 +172,8 @@ perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't test
 =item IO::Zlib or 'zcat' to decode gziped index file.
 
 =item version.pm
+
+=item File::Copy for file:// mirror urls
 
 =back
 
