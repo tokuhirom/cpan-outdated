@@ -54,7 +54,7 @@ sub main {
             my $inst_version = parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
             next if $inst_version eq 'undef';
-            if ($inst_version ne $version && version->new($inst_version) < version->new($version)) {
+            if (compare_version($inst_version, $version)) {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
@@ -65,6 +65,28 @@ sub main {
             last SCAN_INC;
         }
     }
+}
+
+sub compare_version {
+    my ($inst_version, $version) = @_;
+    return 0 if $inst_version eq $version;
+
+    my $inst_version_obj = eval { version->new($inst_version) } || version->new(permissive_filter($inst_version));
+    my $version_obj      = eval { version->new($version) } || version->new(permissive_filter($version));
+
+    return $inst_version_obj < $version_obj ? 1 : 0;
+}
+
+# for broken packages.
+sub permissive_filter {
+    local $_ = $_[0];
+    s/^[Vv](\d)/$1/;                   # Bioinf V2.0
+    s/^(\d+)_(\d+)$/$1.$2/;            # VMS-IndexedFile 0_02
+    s/-[a-zA-Z]+$//;                   # Math-Polygon-Tree 0.035-withoutworldwriteables
+    s/([a-j])/ord($1)-ord('a')/gie;    # DBD-Solid 0.20a
+    s/[_h-z-]/./gi;                    # makepp 1.50.2vs.070506
+    s/\.{2,}/./g;
+    $_;
 }
 
 sub parse_version {
