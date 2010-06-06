@@ -10,7 +10,7 @@ use Config;
 use version;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;

@@ -1,3 +1,8 @@
+0.06
+
+    - version number comparator should be more permissive
+      RT#58165(reported by Rafael Kitover)
+
 0.05
 
     - allow specifying alternate mirror urls(doy++)
