@@ -6,6 +6,7 @@ WriteMakefile(
         'LWP'      => 0,
         'IO::Zlib' => 0,
         'version'  => 0,
+        'ExtUtils::MakeMaker' => 6.56,
     },
     EXE_FILES => ['bin/cpan-outdated'],
 );
