@@ -1,3 +1,8 @@
+0.07
+
+    - depend to EU::MM 6.56 for better version number parsing.
+      (reported by aer0++, fixed by chiba++)
+
 0.06
 
     - version number comparator should be more permissive
