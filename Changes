@@ -1,7 +1,16 @@
+0.08
+
+    - fixed Win32::GUI::Constants::Tags issue.
+      02packages.details.txt.gz says version number is 'undef'.
+      but EU::MM says '0.04'.
+      (reported by aer0++, fixed by chiba++)
+
+      It's distribution issue. But I added workaround.
+
 0.07
 
     - depend to EU::MM 6.56 for better version number parsing.
-      (reported by aer0++, fixed by chiba++)
+      (thanks to chiba++)
 
 0.06
 
