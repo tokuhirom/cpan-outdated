@@ -14,11 +14,11 @@ our $VERSION = "0.08";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
-my $verbose = 0;
 GetOptions(
-    'h|help'     => \my $help,
-    'verbose:1'  => \$verbose,
-    'm|mirror=s' => \$mirror,
+    'h|help'          => \my $help,
+    'verbose'         => \my $verbose,
+    'compare-changes' => \my $compare_changes,
+    'm|mirror=s'      => \$mirror,
 ) or pod2usage();
 pod2usage() if $help;
 
@@ -59,11 +59,11 @@ sub main {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
-                    if ($verbose > 1) {
-                        print_diff_changes($pkg, $inst_version, $version);
-                    }
                 } else {
                     print "$dist\n";
+                }
+                if ($compare_changes) {
+                    print_diff_changes($pkg, $inst_version, $version);
                 }
             }
             last SCAN_INC;
@@ -210,7 +210,7 @@ sub init_tools {
         die "Cannot find IO::Zlib or zcat.\n";
     }
 
-    if ( $verbose > 1 ) {
+    if ( $compare_changes ) {
         if ( !eval { require LWP::UserAgent } ) {
             die "Cannot find LWP::UserAgent.\n";
         }
@@ -240,8 +240,8 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # verbose
     % cpan-outdated --verbose
 
-    # verbose level2. output changes diff
-    % cpan-outdated --verbose=2
+    # output changes diff
+    % cpan-outdated --compare-changes
 
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
