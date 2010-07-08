@@ -14,10 +14,10 @@ our $VERSION = "0.08";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
-
+my $verbose = 0;
 GetOptions(
     'h|help'     => \my $help,
-    'verbose'    => \my $verbose,
+    'verbose:1'  => \$verbose,
     'm|mirror=s' => \$mirror,
 ) or pod2usage();
 pod2usage() if $help;
@@ -59,12 +59,76 @@ sub main {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
+                    if ($verbose > 1) {
+                        print_diff_changes($pkg, $inst_version, $version);
+                    }
                 } else {
                     print "$dist\n";
                 }
             }
             last SCAN_INC;
         }
+    }
+}
+
+sub print_diff_changes {
+    my ( $pkg, $inst_version, $cpan_version ) = @_;
+    $pkg =~ s/::/-/g;
+
+    my $ua = LWP::UserAgent->new;
+
+    my $change_file_name;
+    my $old_changes;
+    for my $tmp_change_file_name ( qw/Changes CHANGES Changelog ChangeLog CHANGELOG/ ) {
+        my $res = $ua->get(qq{http://cpansearch.perl.org/dist/$pkg-$inst_version/$tmp_change_file_name});
+        unless ( $res->is_success && $res->request->uri =~ m/$tmp_change_file_name$/ ) {
+            next;
+        }
+        $old_changes = $res->content;
+        if ( $old_changes ) {
+            $change_file_name = $tmp_change_file_name;
+            last;
+        }
+    }
+    if ( !$old_changes || !$change_file_name ) {
+        print "Cannot find old changes.\n\n";
+        return;
+    }
+
+    my $res = $ua->get(qq{http://cpansearch.perl.org/dist/$pkg-$cpan_version/$change_file_name});
+    unless ( $res->is_success && $res->request->uri =~ m/$change_file_name$/ && $res->content) {
+        print "Cannot find new changes.\n\n";
+        return;
+    }
+    my $new_changes = $res->content;
+
+    print_diff($old_changes, $new_changes);
+    print "\n";
+}
+sub print_diff {
+    my ($old_changes, $new_changes) = @_;
+
+    my $diff = Algorithm::Diff->new( [split /\n/, $old_changes], [split /\n/, $new_changes] );
+
+    # copy from Algorithm::Diff SYNOPSYS
+    $diff->Base( 1 );   # Return line numbers, not indices
+    while(  $diff->Next()  ) {
+        next   if  $diff->Same();
+        my $sep = '';
+        if(  ! $diff->Items(2)  ) {
+            printf "%d,%dd%d\n",
+                $diff->Get(qw( Min1 Max1 Max2 ));
+        } elsif(  ! $diff->Items(1)  ) {
+            printf "%da%d,%d\n",
+                $diff->Get(qw( Max1 Min2 Max2 ));
+        } else {
+            $sep = "---\n";
+            printf "%d,%dc%d,%d\n",
+                $diff->Get(qw( Min1 Max1 Min2 Max2 ));
+        }
+        print "< $_\n"   for  $diff->Items(1);
+        print $sep;
+        print "> $_\n"   for  $diff->Items(2);
     }
 }
 
@@ -145,6 +209,15 @@ sub init_tools {
     } else {
         die "Cannot find IO::Zlib or zcat.\n";
     }
+
+    if ( $verbose > 1 ) {
+        if ( !eval { require LWP::UserAgent } ) {
+            die "Cannot find LWP::UserAgent.\n";
+        }
+        if ( !eval { require Algorithm::Diff } ) {
+            die "Cannot find Algorithm::Diff.\n";
+        }
+    }
 }
 
 sub file_getstore {
@@ -166,6 +239,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
     # verbose
     % cpan-outdated --verbose
+
+    # verbose level2. output changes diff
+    % cpan-outdated --verbose=2
 
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
