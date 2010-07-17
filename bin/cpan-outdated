@@ -14,11 +14,13 @@ our $VERSION = "0.09";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
+my @inc = @INC; # copy
 GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
     'compare-changes' => \my $compare_changes,
     'm|mirror=s'      => \$mirror,
+    'I=s'             => sub { unshift @inc, $_[1] },
 ) or pod2usage();
 pod2usage() if $help;
 
@@ -49,7 +51,7 @@ sub main {
         next if $dist =~ m{/perl-[0-9._]+\.tar\.gz$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
-        SCAN_INC: for my $dir (@INC) {
+        SCAN_INC: for my $dir (@inc) {
             my $path = "$dir/$file";
             next unless -f $path;
             my $inst_version = parse_version($path);
