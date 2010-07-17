@@ -248,6 +248,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
 
+    # additional module path
+    % cpan-outdated -I extlib/
+
     # install with cpan
     % cpan-outdated | xargs cpan -i
 
