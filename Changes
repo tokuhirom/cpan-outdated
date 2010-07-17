@@ -1,3 +1,7 @@
+0.10
+
+    - added -I option, suggested by Sebastian Willert [RT#59454]
+
 0.09
 
     - added --compare-changes option(by nihen++)
