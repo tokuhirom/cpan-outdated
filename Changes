@@ -1,3 +1,10 @@
+0.11
+
+    - removed -I option(sorry, It's my misstake.)
+    - added -l and -L option for local::lib support.
+      Option meaning is same as cpanm.
+      suggested by Sebastian Willert [RT#59454]
+
 0.10
 
     - added -I option, suggested by Sebastian Willert [RT#59454]

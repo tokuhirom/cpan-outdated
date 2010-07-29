@@ -12,7 +12,7 @@ use LWP::Simple ();
 use IO::Zlib;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
