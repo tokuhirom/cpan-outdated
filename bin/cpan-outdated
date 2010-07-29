@@ -16,13 +16,18 @@ our $VERSION = "0.10";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
-my @inc = @INC; # copy
-GetOptions(
+my $local_lib;
+my $self_contained = 0;
+Getopt::Long::Configure("bundling");
+Getopt::Long::GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
     'compare-changes' => \my $compare_changes,
     'm|mirror=s'      => \$mirror,
-    'I=s'             => sub { unshift @inc, $_[1] },
+    'I=s'             => sub { die "this option was deprecated" },
+    'l|local-lib=s'   => \$local_lib,
+    'L|local-lib-contained=s' =>
+      sub { $local_lib = $_[1]; $self_contained = 1; },
 ) or pod2usage();
 pod2usage() if $help;
 
@@ -36,6 +41,10 @@ unless ($ENV{HARNESS_ACTIVE}) {
 
 sub main {
     init_tools();
+
+    if ($local_lib) {
+        setup_local_lib($local_lib, $self_contained);
+    }
 
     my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
     getstore($index_url, $tmpfile->filename) or die "Cannot getstore file";
@@ -53,7 +62,7 @@ sub main {
         next if $dist =~ m{/perl-[0-9._]+\.tar\.gz$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
-        SCAN_INC: for my $dir (@inc) {
+        SCAN_INC: for my $dir (@INC) {
             my $path = "$dir/$file";
             next unless -f $path;
             my $inst_version = parse_version($path);
@@ -206,6 +215,23 @@ sub init_tools {
     }
 }
 
+sub setup_local_lib {
+    my ($base, $self_contained) = @_;
+    $base ||= '~/perl5/';
+
+    require local::lib;
+    if ($self_contained) {
+        @INC = (
+            local::lib->install_base_perl_path($base),
+            local::lib->install_base_arch_path($base),
+            @Config{qw(privlibexp archlibexp)},
+        );
+    }
+
+    local $SIG{__WARN__} = sub { }; # catch 'Attempting to write ...'
+    local::lib->import($base);
+}
+
 __END__
 
 =head1 NAMES
@@ -226,8 +252,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
 
-    # additional module path
-    % cpan-outdated -I extlib/
+    # additional module path(same as cpanminus)
+    % cpan-outdated -l extlib/
+    % cpan-outdated -L extlib/
 
     # install with cpan
     % cpan-outdated | xargs cpan -i
@@ -249,9 +276,9 @@ perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't test
 
 =over 4
 
-=item LWP or 'wget' to get a index file over HTTP.
+=item LWP to get a index file over HTTP.
 
-=item IO::Zlib or 'zcat' to decode gziped index file.
+=item IO::Zlib to decode gziped index file.
 
 =item version.pm
 
