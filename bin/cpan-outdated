@@ -8,6 +8,8 @@ use File::Temp;
 use File::Spec;
 use Config;
 use version;
+use LWP::Simple ();
+use IO::Zlib;
 use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.10";
@@ -184,34 +186,16 @@ sub which {
     return;
 }
 
+sub getstore {
+    my ($url, $fname) = @_;
+    return LWP::Simple::getstore($url => $fname) == 200;
+}
+
+sub zopen {
+    IO::Zlib->new($_[0], "rb");
+}
+
 sub init_tools {
-    if (!$ENV{DEBUG_WGET} && eval { require LWP::Simple }) {
-        *getstore = sub { LWP::Simple::getstore(@_) == 200 };
-    } elsif (my $wget = which 'wget') {
-        *getstore = sub {
-            my($uri, $path) = @_;
-            return file_getstore($uri, $path) if $uri =~ s!^file:/+!/!;
-            system($wget, '--quiet', $uri, '-O', $path) == 0;
-        };
-    } else {
-        die "Cannot find LWP::Simple and wget.\n";
-    }
-
-    if (!$ENV{DEBUG_ZCAT} && eval { require IO::Zlib }) {
-        *zopen = sub {
-            IO::Zlib->new($_[0], "rb");
-        };
-    } elsif (my $zcat = which 'zcat') {
-        *zopen = sub {
-            my $file = shift;
-            open(my $fh, '-|', $zcat, $file)
-                or return;
-            return $fh;
-        };
-    } else {
-        die "Cannot find IO::Zlib or zcat.\n";
-    }
-
     if ( $compare_changes ) {
         if ( !eval { require LWP::UserAgent } ) {
             die "Cannot find LWP::UserAgent.\n";
@@ -220,12 +204,6 @@ sub init_tools {
             die "Cannot find Algorithm::Diff.\n";
         }
     }
-}
-
-sub file_getstore {
-    my ($self, $uri, $path) = @_;
-    require File::Copy;
-    File::Copy::copy($uri, $path);
 }
 
 __END__
