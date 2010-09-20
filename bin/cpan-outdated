@@ -21,6 +21,7 @@ my $self_contained = 0;
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \my $help,
+    'a|all'           => \my $all,
     'verbose'         => \my $verbose,
     'compare-changes' => \my $compare_changes,
     'm|mirror=s'      => \$mirror,
@@ -68,7 +69,7 @@ sub main {
             my $inst_version = parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
             next if $inst_version eq 'undef';
-            if (compare_version($inst_version, $version)) {
+            if ( $all || compare_version($inst_version, $version)) {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
@@ -261,6 +262,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
     # install with cpanm
     % cpan-outdated | xargs cpanm
+
+    # list CPAN distribution for all installed modules
+    % cpan-outdated -a
 
 =head1 DESCRIPTION
 
