@@ -10,6 +10,7 @@ use Config;
 use version;
 use LWP::Simple ();
 use IO::Zlib;
+use CPAN::DistnameInfo;
 use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.11";
@@ -56,7 +57,8 @@ sub main {
     }
     # body part
     my %seen;
-    while (my $line = <$fh>) {
+    my %dist_latest_version;
+    LINES: while (my $line = <$fh>) {
         my ($pkg, $version, $dist) = split /\s+/, $line;
         next if $version eq 'undef';
         next if $dist =~ m{/perl-[0-9._]+\.tar\.gz$};
@@ -64,7 +66,27 @@ sub main {
         $file = "${file}.pm";
         SCAN_INC: for my $dir (@INC) {
             my $path = "$dir/$file";
-            next unless -f $path;
+            next SCAN_INC unless -f $path;
+
+            # ignore old distribution.
+            #   This is a heuristic approach. It is not a strict.
+            #   If you want a strict check, cpan-outdated looks 02packages.details.txt.gz twice.
+            #   It is too slow.
+            #
+            #   But, 02packages.details.txt.gz is sorted.
+            #   Submodules are listed after main module most of the time.
+            #   This strategy works well for now.
+            # ref https://github.com/tokuhirom/cpan-outdated/issues#issue/4
+            my $info = CPAN::DistnameInfo->new($dist);
+            if (my $latest = $dist_latest_version{$info->dist}) {
+                # $info->version < $latest
+                if (compare_version($info->version, $latest)) {
+                    warn "SKIP old distribution ($pkg): $dist < ", $latest, "\n";
+                    next LINES; # skip old version
+                }
+            }
+            $dist_latest_version{$info->dist} = $info->version;
+
             my $inst_version = parse_version($path);
                $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
             next if $inst_version eq 'undef';
@@ -145,6 +167,7 @@ sub print_diff {
     }
 }
 
+# return true if $inst_version is less than $version
 sub compare_version {
     my ($inst_version, $version) = @_;
     return 0 if $inst_version eq $version;
