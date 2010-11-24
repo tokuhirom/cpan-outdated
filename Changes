@@ -1,3 +1,11 @@
+0.12
+
+    - Do not install old distribution.
+      (reported by leedo)
+      https://github.com/tokuhirom/cpan-outdated/issues/issue/4/
+    - Do not modify @INC on -l and -L.
+      It breaks lazy loading in LWP.
+
 0.11
 
     - removed -I option(sorry, It's my misstake.)
