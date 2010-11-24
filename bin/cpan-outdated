@@ -81,7 +81,7 @@ sub main {
             if (my $latest = $dist_latest_version{$info->dist}) {
                 # $info->version < $latest
                 if (compare_version($info->version, $latest)) {
-                    warn "SKIP old distribution ($pkg): $dist < ", $latest, "\n";
+                    # warn "SKIP old distribution ($pkg): $dist < ", $latest, "\n";
                     next LINES; # skip old version
                 }
             }
