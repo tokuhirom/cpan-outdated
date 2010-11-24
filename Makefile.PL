@@ -8,6 +8,7 @@ WriteMakefile(
         'version'  => 0,
         'local::lib' => 0,
         'ExtUtils::MakeMaker' => 6.56,
+		'CPAN::DistnameInfo' => 0.10,
     },
     EXE_FILES => ['bin/cpan-outdated'],
 );
