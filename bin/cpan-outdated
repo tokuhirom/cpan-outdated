@@ -43,9 +43,8 @@ unless ($ENV{HARNESS_ACTIVE}) {
 sub main {
     init_tools();
 
-    if ($local_lib) {
-        setup_local_lib($local_lib, $self_contained);
-    }
+    my @libpath = make_inc($local_lib, $self_contained);
+    # warn join("\n", @libpath);
 
     my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
     getstore($index_url, $tmpfile->filename) or die "Cannot getstore file";
@@ -64,7 +63,7 @@ sub main {
         next if $dist =~ m{/perl-[0-9._]+\.tar\.gz$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
-        SCAN_INC: for my $dir (@INC) {
+        SCAN_INC: for my $dir (@libpath) {
             my $path = "$dir/$file";
             next SCAN_INC unless -f $path;
 
@@ -238,21 +237,24 @@ sub init_tools {
     }
 }
 
-sub setup_local_lib {
+sub make_inc {
     my ($base, $self_contained) = @_;
-    $base ||= '~/perl5/';
 
-    require local::lib;
-    if ($self_contained) {
-        @INC = (
+    if ($base) {
+        require local::lib;
+        my @modified_inc = (
             local::lib->install_base_perl_path($base),
             local::lib->install_base_arch_path($base),
-            @Config{qw(privlibexp archlibexp)},
         );
+        if ($self_contained) {
+            push @modified_inc, @Config{qw(privlibexp archlibexp)};
+        } else {
+            push @modified_inc, @INC;
+        }
+        return @modified_inc;
+    } else {
+        return @INC;
     }
-
-    local $SIG{__WARN__} = sub { }; # catch 'Attempting to write ...'
-    local::lib->import($base);
 }
 
 __END__

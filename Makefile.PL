@@ -6,7 +6,7 @@ WriteMakefile(
         'LWP'      => 0,
         'IO::Zlib' => 0,
         'version'  => 0,
-        'local::lib' => 0,
+        'local::lib' => 1.006008,
         'ExtUtils::MakeMaker' => 6.56,
 		'CPAN::DistnameInfo' => 0.10,
     },
