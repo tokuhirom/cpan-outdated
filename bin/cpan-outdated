@@ -13,7 +13,7 @@ use IO::Zlib;
 use CPAN::DistnameInfo;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;

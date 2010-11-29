@@ -1,3 +1,8 @@
+0.13
+
+    - Support -p|--print-package option for cpanm version tracking
+      (miyagawa)
+
 0.12
 
     - Do not install old distribution.
