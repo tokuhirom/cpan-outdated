@@ -25,6 +25,7 @@ Getopt::Long::GetOptions(
     'verbose'         => \my $verbose,
     'compare-changes' => \my $compare_changes,
     'm|mirror=s'      => \$mirror,
+    'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
     'l|local-lib=s'   => \$local_lib,
     'L|local-lib-contained=s' =>
@@ -93,6 +94,8 @@ sub main {
                 next if $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
+                } elsif ($print_package) {
+                    print "$pkg\n";
                 } else {
                     print "$dist\n";
                 }
@@ -265,8 +268,11 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
 =head1 SYNOPSIS
 
-    # print list of outdated modules
+    # print the list of distribution that contains outdated modules
     % cpan-outdated
+
+    # print the list of outdated modules in packages
+    % cpan-outdated -p
 
     # verbose
     % cpan-outdated --verbose
@@ -289,11 +295,22 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
 =head1 DESCRIPTION
 
-This module print list of outdated CPAN modules in your machine.
+This script prints the list of outdated CPAN modules in your machine.
 
-It's same feature of 'CPAN::Shell->r', but cpan-outdated is so fast and less memory.
+It's same feature of 'CPAN::Shell->r', but C<cpan-outdated> is much faster and uses less memory.
 
-This script can integrate with cpanm command.
+This script can be integrated with L<cpanm> command.
+
+=head1 PRINTING PACKAGES VS DISTRIBUTIONS
+
+This script by default prints the outdated distribution as in the CPAN
+distro format, i.e: C<A/AU/AUTHOR/Distribution-Name-0.10.tar.gz> so
+you can pipe into CPAN installers, but with C<-p> option it can be
+twaked to print the module's package names.
+
+For some tools such as L<cpanm> installing from packages could be a
+bit more useful since you can track to see the old version number
+where you upgrade from.
 
 =head1 DEPENDENCIES
 
