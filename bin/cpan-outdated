@@ -291,7 +291,8 @@ cpan-outdated - detect outdated CPAN modules in your environment
     % cpan-outdated | xargs cpan -i
 
     # install with cpanm
-    % cpan-outdated | xargs cpanm
+    % cpan-outdated    | cpanm
+    % cpan-outdated -p | cpanm
 
 =head1 DESCRIPTION
 
@@ -339,5 +340,7 @@ This library is free software; you can redistribute it and/or modify it under th
 =head1 SEE ALSO
 
 L<CPAN>
+
+L<App::cpanm>
 
 =cut
