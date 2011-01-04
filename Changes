@@ -1,3 +1,7 @@
+0.14
+
+    - doc enhancements(gfx)
+
 0.13
 
     - Support -p|--print-package option for cpanm version tracking
