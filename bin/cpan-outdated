@@ -63,7 +63,7 @@ sub main {
     LINES: while (my $line = <$fh>) {
         my ($pkg, $version, $dist) = split /\s+/, $line;
         next if $version eq 'undef';
-        next if $dist =~ m{/perl-[0-9._]+\.tar\.gz$};
+        next if $dist =~ m{/perl-[0-9._]+\.tar\.(gz|bz2)$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
         SCAN_INC: for my $dir (@libpath) {
