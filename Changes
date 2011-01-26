@@ -1,3 +1,7 @@
+0.15
+
+    - --compare-changes deprecated. It can use cpan-listchanges instead.
+
 0.14
 
     - doc enhancements(gfx)

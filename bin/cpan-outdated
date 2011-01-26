@@ -23,7 +23,7 @@ Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
-    'compare-changes' => \my $compare_changes,
+    'compare-changes' => sub { die "this option was deprecated. You can use 'cpan-listchanges `cpan-outdated -p`' instead." },
     'm|mirror=s'      => \$mirror,
     'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
@@ -42,8 +42,6 @@ unless ($ENV{HARNESS_ACTIVE}) {
 }
 
 sub main {
-    init_tools();
-
     my @libpath = make_inc($local_lib, $self_contained);
     # warn join("\n", @libpath);
 
@@ -99,75 +97,12 @@ sub main {
                 } else {
                     print "$dist\n";
                 }
-                if ($compare_changes) {
-                    print_diff_changes($pkg, $inst_version, $version);
-                }
             }
             last SCAN_INC;
         }
     }
 }
 
-sub print_diff_changes {
-    my ( $pkg, $inst_version, $cpan_version ) = @_;
-    $pkg =~ s/::/-/g;
-
-    my $ua = LWP::UserAgent->new;
-
-    my $change_file_name;
-    my $old_changes;
-    for my $tmp_change_file_name ( qw/Changes CHANGES Changelog ChangeLog CHANGELOG/ ) {
-        my $res = $ua->get(qq{http://cpansearch.perl.org/dist/$pkg-$inst_version/$tmp_change_file_name});
-        unless ( $res->is_success && $res->request->uri =~ m/$tmp_change_file_name$/ ) {
-            next;
-        }
-        $old_changes = $res->content;
-        if ( $old_changes ) {
-            $change_file_name = $tmp_change_file_name;
-            last;
-        }
-    }
-    if ( !$old_changes || !$change_file_name ) {
-        print "Cannot find old changes.\n\n";
-        return;
-    }
-
-    my $res = $ua->get(qq{http://cpansearch.perl.org/dist/$pkg-$cpan_version/$change_file_name});
-    unless ( $res->is_success && $res->request->uri =~ m/$change_file_name$/ && $res->content) {
-        print "Cannot find new changes.\n\n";
-        return;
-    }
-    my $new_changes = $res->content;
-
-    print_diff($old_changes, $new_changes);
-    print "\n";
-}
-sub print_diff {
-    my ($old_changes, $new_changes) = @_;
-
-    my $diff = Algorithm::Diff->new( [split /\n/, $old_changes], [split /\n/, $new_changes] );
-
-    # copy from Algorithm::Diff SYNOPSYS
-    $diff->Base( 1 );   # Return line numbers, not indices
-    while(  $diff->Next()  ) {
-        next   if  $diff->Same();
-        my $sep = '';
-        if(  ! $diff->Items(2)  ) {
-            printf "%d,%dd%d\n",
-                $diff->Get(qw( Min1 Max1 Max2 ));
-        } elsif(  ! $diff->Items(1)  ) {
-            printf "%da%d,%d\n",
-                $diff->Get(qw( Max1 Min2 Max2 ));
-        } else {
-            $sep = "---\n";
-            printf "%d,%dc%d,%d\n",
-                $diff->Get(qw( Min1 Max1 Min2 Max2 ));
-        }
-        print "< $_\n"   for  $diff->Items(1);
-        print $sep;
-        print "> $_\n"   for  $diff->Items(2);
-    }
-}
 
 # return true if $inst_version is less than $version
 sub compare_version {
@@ -229,17 +164,6 @@ sub zopen {
     IO::Zlib->new($_[0], "rb");
 }
 
-sub init_tools {
-    if ( $compare_changes ) {
-        if ( !eval { require LWP::UserAgent } ) {
-            die "Cannot find LWP::UserAgent.\n";
-        }
-        if ( !eval { require Algorithm::Diff } ) {
-            die "Cannot find Algorithm::Diff.\n";
-        }
-    }
-}
-
 sub make_inc {
     my ($base, $self_contained) = @_;
 
@@ -276,9 +200,6 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
     # verbose
     % cpan-outdated --verbose
-
-    # output changes diff
-    % cpan-outdated --compare-changes
 
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
