@@ -1,6 +1,6 @@
 0.15
 
-    - --compare-changes deprecated. It can use cpan-listchanges instead.
+    - --compare-changes deprecated. It can use cpan-listchanges instead.(nihen)
 
 0.14
 
