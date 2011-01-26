@@ -23,13 +23,17 @@ Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
-    'compare-changes' => sub { die "this option was deprecated. You can use 'cpan-listchanges `cpan-outdated -p`' instead." },
     'm|mirror=s'      => \$mirror,
     'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
     'l|local-lib=s'   => \$local_lib,
     'L|local-lib-contained=s' =>
       sub { $local_lib = $_[1]; $self_contained = 1; },
+    'compare-changes' => sub {
+        die "--compare-changes option was deprecated.\n"
+          . "You can use 'cpan-listchanges `cpan-outdated -p`' instead.\n"
+          . "cpanm cpan-listchanges # install from CPAN\n"
+    },
 ) or pod2usage();
 pod2usage() if $help;
 
@@ -263,5 +267,7 @@ This library is free software; you can redistribute it and/or modify it under th
 L<CPAN>
 
 L<App::cpanminus>
+
+L<cpan-listchanges>
 
 =cut
