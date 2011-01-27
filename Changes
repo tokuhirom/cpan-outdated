@@ -1,3 +1,7 @@
+0.16
+
+    - skip perl distribution not only for perl-X.Y.Z.tar.gz but also perl-X.Y.Z.tar.bz2(kmx)
+
 0.15
 
     - --compare-changes deprecated. It can use cpan-listchanges instead.(nihen)
