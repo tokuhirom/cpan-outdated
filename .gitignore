@@ -9,3 +9,4 @@ inc/
 nytprof.out
 pm_to_blib
 MANIFEST
+MYMETA.yml
