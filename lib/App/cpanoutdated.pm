@@ -1,3 +1,3 @@
 package App::cpanoutdated;
-our $VERSION = "0.17";
+our $VERSION = "0.18";
 1;
