@@ -15,8 +15,6 @@ plan skip_all => "no spell/ispell/aspell" unless $spell_cmd;
 set_spell_cmd($spell_cmd);
 all_pod_files_spelling_ok('lib');
 __DATA__
-[% config.author %]
-[% module %]
 tokuhirom
 AAJKLFJEF
 GMAIL
@@ -49,3 +47,5 @@ irc
 org
 CSS
 Amon
+Tokuhiro
+Matsuno
