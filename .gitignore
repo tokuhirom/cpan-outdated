@@ -10,3 +10,12 @@ nytprof.out
 pm_to_blib
 MANIFEST
 MYMETA.yml
+ppport.h
+*.bak
+Build
+_build/
+xshelper.h
+tags
+MYMETA.*
+META.json
+README
