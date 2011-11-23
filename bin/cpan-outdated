@@ -238,20 +238,6 @@ For some tools such as L<cpanm> installing from packages could be a
 bit more useful since you can track to see the old version number
 where you upgrade from.
 
-=head1 DEPENDENCIES
-
-perl 5.8 or later (Actually I believe it works with pre 5.8 too but haven't tested).
-
-=over 4
-
-=item LWP to get a index file over HTTP.
-
-=item IO::Zlib to decode gziped index file.
-
-=item version.pm
-
-=back
-
 =head1 AUTHOR
 
 Tokuhiro Matsuno
