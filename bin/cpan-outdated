@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Getopt::Long;
 use Pod::Usage;
-use ExtUtils::MakeMaker;
 use File::Temp;
 use File::Spec;
 use Config;
@@ -11,6 +10,7 @@ use version;
 use LWP::Simple ();
 use IO::Zlib;
 use CPAN::DistnameInfo;
+use Module::Metadata;
 use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.18";
@@ -89,9 +89,12 @@ sub main {
             }
             $dist_latest_version{$info->dist} = $info->version;
 
-            my $inst_version = parse_version($path);
-               $inst_version  =~ s/\s+//; # workaround for Attribute::Params::Validate
-            next if $inst_version eq 'undef';
+            my $meta = do {
+                local $SIG{__WARN__} = sub {};
+                Module::Metadata->new_from_file($path);
+            };
+            my $inst_version = $meta->version($pkg);
+            next unless defined $inst_version;
             if (compare_version($inst_version, $version)) {
                 next if $seen{$dist}++;
                 if ($verbose) {
@@ -129,18 +132,6 @@ sub permissive_filter {
     s/[_h-z-]/./gi;                    # makepp 1.50.2vs.070506
     s/\.{2,}/./g;
     $_;
-}
-
-sub parse_version {
-    my $path = shift;
-    local $SIG{__WARN__} = sub {
-        # This is workaround for EU::MM's issue.
-        # following one-liner makes too long warnings.
-        #   perl -e 'use ExtUtils::MM; MM->parse_version("/usr/local/app/perl-5.10.1/lib/site_perl/5.10.1/Authen/Simple/Apache.pm")'
-        return if @_ && $_[0] =~ /^Could not eval/;
-        CORE::warn(@_);
-    };
-    MM->parse_version($path);
 }
 
 # taken from cpanminus
