@@ -63,6 +63,11 @@ sub main {
     LINES: while (my $line = <$fh>) {
         my ($pkg, $version, $dist) = split /\s+/, $line;
         next if $version eq 'undef';
+
+        # $Mail::SpamAssassin::Conf::VERSION is 'bogus'
+        # https://rt.cpan.org/Public/Bug/Display.html?id=73465
+        next unless $version =~ /[0-9]/;
+
         next if $dist =~ m{/perl-[0-9._]+\.tar\.(gz|bz2)$};
         (my $file = $pkg) =~ s!::!/!g;
         $file = "${file}.pm";
