@@ -10,6 +10,7 @@ use version;
 use LWP::Simple ();
 use IO::Zlib;
 use CPAN::DistnameInfo;
+use Module::CoreList ();
 use Module::Metadata;
 use constant WIN32 => $^O eq 'MSWin32';
 
@@ -34,11 +35,15 @@ Getopt::Long::GetOptions(
           . "You can use 'cpan-listchanges `cpan-outdated -p`' instead.\n"
           . "cpanm cpan-listchanges # install from CPAN\n"
     },
+    'exclude-core' => \my $exclude_core,
 ) or pod2usage();
 pod2usage() if $help;
 
 $mirror =~ s:/$::;
 my $index_url = "${mirror}/modules/02packages.details.txt.gz";
+
+my $perl_version = sprintf '%d.%03d%03d', (map {ord} split('', $^V));
+my $core_modules = $Module::CoreList::version{$perl_version};
 
 unless ($ENV{HARNESS_ACTIVE}) {
     &main;
@@ -67,6 +72,9 @@ sub main {
         # $Mail::SpamAssassin::Conf::VERSION is 'bogus'
         # https://rt.cpan.org/Public/Bug/Display.html?id=73465
         next unless $version =~ /[0-9]/;
+        
+        # if excluding core modules
+        next if $exclude_core && exists $core_modules->{$pkg};
 
         next if $dist =~ m{/perl-[0-9._]+\.tar\.(gz|bz2)$};
         (my $file = $pkg) =~ s!::!/!g;
