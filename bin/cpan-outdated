@@ -20,6 +20,21 @@ my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
 my $local_lib;
 my $self_contained = 0;
+
+# parse the options file
+if (open(my $rcfile, '<', File::Spec->catfile($ENV{HOME}, '.cpan-outdated.conf'))) {
+    while (<$rcfile>) {
+        s/\#.*$//;
+        s/^\s+//;
+        s/\s+$//;
+        next unless $_;
+        my @pair = split /\s+/, $_, 2;
+        $pair[0] = '--' . $pair[0];
+        unshift @ARGV, @pair;
+    }
+    close $rcfile;
+}
+
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \my $help,
@@ -36,6 +51,7 @@ Getopt::Long::GetOptions(
           . "cpanm cpan-listchanges # install from CPAN\n"
     },
     'exclude-core' => \my $exclude_core,
+    'b|blacklist=s'   => \my @blacklist,
 ) or pod2usage();
 pod2usage() if $help;
 
@@ -75,6 +91,9 @@ sub main {
         
         # if excluding core modules
         next if $exclude_core && exists $core_modules->{$pkg};
+
+        # do not update blacklisted modules
+        next if grep { $pkg =~ m{^$_$} } @blacklist;
 
         next if $dist =~ m{/perl-[0-9._]+\.tar\.(gz|bz2)$};
         (my $file = $pkg) =~ s!::!/!g;
