@@ -55,7 +55,7 @@ sub main {
     # warn join("\n", @libpath);
 
     my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
-    getstore($index_url, $tmpfile->filename) or die "Cannot getstore file";
+    getstore($index_url, $tmpfile->filename);
 
     my $fh = zopen($tmpfile) or die "cannot open $tmpfile";
     # skip header part
@@ -165,7 +165,19 @@ sub which {
 
 sub getstore {
     my ($url, $fname) = @_;
-    return LWP::Simple::getstore($url => $fname) == 200;
+    my $ua = LWP::UserAgent->new(
+        parse_head => 0,
+    );
+    $ua->env_proxy();
+    my $request = HTTP::Request->new(GET => $url);
+    my $response = $ua->request($request, $fname);
+    if (my $died = $response->header('X-Died')) {
+        die "Cannot getstore $url to $fname: $died";
+    } elsif ($response->code == 200) {
+        return 1;
+    } else {
+        die "Cannot getstore $url to $fname: " . $response->status_line;
+    }
 }
 
 sub zopen {
