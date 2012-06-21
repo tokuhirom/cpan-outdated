@@ -1,3 +1,7 @@
+0.22
+
+    - better error diag, reported by ssb++
+
 0.21
 
     - Fixed: Failure if module CPAN version is 'bogus'
