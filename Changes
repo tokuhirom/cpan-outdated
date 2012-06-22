@@ -1,3 +1,8 @@
+0.23
+
+    - setup abstract
+    https://rt.cpan.org/Public/Bug/Display.html?id=77958
+
 0.22
 
     - better error diag, reported by ssb++

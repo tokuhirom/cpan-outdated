@@ -1,6 +1,7 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'App::cpanoutdated',
+    ABSTRACT     => "detect outdated CPAN modules in your environment",
     VERSION_FROM => "lib/App/cpanoutdated.pm",
     LICENSE      => 'perl',
     PREREQ_PM    => {
