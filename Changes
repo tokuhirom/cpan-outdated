@@ -1,3 +1,11 @@
+0.24
+
+    commit 542e8c296fc59c28d8e98aae7a65b3cf67cb12d1
+    Author: Sharl Morlaroll <sharl_github@haun.org>
+    Date:   Tue Oct 23 01:19:00 2012 +0900
+
+    fix --exclude-core
+
 0.23
 
     - setup abstract
