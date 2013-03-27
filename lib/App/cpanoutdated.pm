@@ -5,6 +5,10 @@ our $VERSION = "0.24";
 1;
 __END__
 
+=head1 NAME
+
+App::cpanoutdated - detect outdated CPAN modules in your environment.
+
 =head1 DESCRIPTION
 
 see L<cpan-outdated>.
