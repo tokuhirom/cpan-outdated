@@ -1,3 +1,14 @@
+{{$NEXT}}
+
+0.25 2013-03-28T02:13:05Z
+
+    commit 6843e0eb2fed8e0cbffabae0b3b87b49d75fd177
+    Author: Oleg Gashev <oleg@gashev.net>
+    Date:   Wed Mar 27 16:21:05 2013 -0400
+
+    Fix lintian warning: manpage-has-bad-whatis-entry usr/share/man/man3/App::cpanoutdated.3pm.gz.
+    http://lintian.debian.org/tags/manpage-has-bad-whatis-entry.html.
+
 0.24
 
     commit 542e8c296fc59c28d8e98aae7a65b3cf67cb12d1
