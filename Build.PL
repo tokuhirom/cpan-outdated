@@ -5,14 +5,14 @@ use File::Basename;
 use File::Spec;
 use CPAN::Meta;
 
-use 5.008005;
+use 5.008001;
 
 my $builder = Module::Build->new(
     license              => 'perl',
     dynamic_config       => 0,
 
     requires             => {
-        perl => '5.008005',
+        perl => '5.008001',
     },
     configure_requires => {
         'Module::Build' => 0.40,
