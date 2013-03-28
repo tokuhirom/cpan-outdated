@@ -14,7 +14,7 @@ use Module::CoreList ();
 use Module::Metadata;
 use constant WIN32 => $^O eq 'MSWin32';
 
-our $VERSION = "0.26";
+our $VERSION = "0.27";
 
 my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
