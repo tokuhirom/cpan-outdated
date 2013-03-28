@@ -17,6 +17,11 @@ _build/
 xshelper.h
 tags
 MYMETA.*
-META.json
 README
 App-cpanoutdated-*/
+/cpan-outdated-*
+/.build
+/_build_params
+/Build
+!Build/
+!META.json
