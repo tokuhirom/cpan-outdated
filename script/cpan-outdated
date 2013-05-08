@@ -247,7 +247,7 @@ This script can be integrated with L<cpanm> command.
 This script by default prints the outdated distribution as in the CPAN
 distro format, i.e: C<A/AU/AUTHOR/Distribution-Name-0.10.tar.gz> so
 you can pipe into CPAN installers, but with C<-p> option it can be
-twaked to print the module's package names.
+tweaked to print the module's package names.
 
 For some tools such as L<cpanm> installing from packages could be a
 bit more useful since you can track to see the old version number
