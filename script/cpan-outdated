@@ -219,6 +219,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
     # verbose
     % cpan-outdated --verbose
+    
+    # ignore core modules (do not update dual life modules)
+    % cpan-outdated --exclude-core
 
     # alternate mirrors
     % cpan-outdated --mirror file:///home/user/minicpan/
@@ -248,6 +251,13 @@ This script by default prints the outdated distribution as in the CPAN
 distro format, i.e: C<A/AU/AUTHOR/Distribution-Name-0.10.tar.gz> so
 you can pipe into CPAN installers, but with C<-p> option it can be
 tweaked to print the module's package names.
+
+If you wish to manage a set of modules separately from your system  
+perl installation and not install newer versions of "dual life modules" 
+that are distributed with perl, the C<--exclude-core> option will make 
+cpan-outdated ignore changes to core modules. Used with tools like 
+cpanm and its C<-L --local-lib-contained> and C<--self-contained> options, 
+this facilitates maintaining updates on standalone sets of modules.
 
 For some tools such as L<cpanm> installing from packages could be a
 bit more useful since you can track to see the old version number
