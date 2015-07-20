@@ -52,7 +52,7 @@ sub main {
     my @libpath = make_inc($local_lib, $self_contained);
     # warn join("\n", @libpath);
 
-    my $index_file = getstore($index_url);
+    my $index_file = get_index($index_url);
 
     my $fh = zopen($index_file) or die "cannot open $index_file";
     # skip header part
@@ -161,7 +161,7 @@ sub which {
 }
 
 # Return the $fname (a generated File::Temp object if not provided)
-sub getstore {
+sub get_index {
     my ($url, $fname) = @_;
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new(
@@ -180,10 +180,10 @@ sub getstore {
         $response = $ua->request(HTTP::Request->new(GET => $url), "$fname");
     }
     if (my $died = $response->header('X-Died')) {
-        die "Cannot getstore $url to $fname: $died";
+        die "Cannot get_index $url to $fname: $died";
     # 304 = "Not Modified" (returned if we are mirroring)
     } elsif (! $response->is_success && $response->code != 304) {
-        die "Cannot getstore $url to $fname: " . $response->status_line;
+        die "Cannot get_index $url to $fname: " . $response->status_line;
     }
     #print "$fname ", $response->status_line, "\n";
     # Return the filename
