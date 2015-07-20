@@ -26,6 +26,7 @@ Getopt::Long::GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
     'm|mirror=s'      => \$mirror,
+    'index'           => \$index_file,
     'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
     'l|local-lib=s'   => \$local_lib,
@@ -44,6 +45,7 @@ $mirror =~ s:/$::;
 my $index_url = "${mirror}/modules/02packages.details.txt.gz";
 $index_url = URI->new($index_url);
 if ($index_url->isa('URI::file')) {
+    die '--index is incompatible with a file:// mirror' if defined $index_file;
     $index_file = $index_url->file
 }
 
