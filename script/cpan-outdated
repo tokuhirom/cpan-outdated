@@ -176,8 +176,7 @@ sub get_index {
     } else {
 	# If the file is empty we do not trust its timestamp (as it may just
 	# have been created if a temp file) so we can't use $ua->mirror
-        require HTTP::Request;
-        $response = $ua->request(HTTP::Request->new(GET => $url), "$fname");
+        $response = $ua->get($url, ':content_file' => "$fname");
     }
     if (my $died = $response->header('X-Died')) {
         die "Cannot get_index $url to $fname: $died";
