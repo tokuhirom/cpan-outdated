@@ -61,10 +61,10 @@ sub main {
     # warn join("\n", @libpath);
 
     if (   !defined($index_file)
-	|| ! -e $index_file || -z $index_file
-	|| !$index_url->isa('URI::file')) {
+        || ! -e $index_file || -z $index_file
+        || !$index_url->isa('URI::file')) {
 
-	$index_file = get_index($index_url, $index_file)
+        $index_file = get_index($index_url, $index_file)
     }
 
     my $fh = zopen($index_file) or die "cannot open $index_file";
@@ -187,8 +187,8 @@ sub get_index {
     if (-s "$fname") {
         $response = $ua->mirror($url, "$fname"); # Explicitely stringify
     } else {
-	# If the file is empty we do not trust its timestamp (as it may just
-	# have been created if a temp file) so we can't use $ua->mirror
+        # If the file is empty we do not trust its timestamp (as it may just
+        # have been created if a temp file) so we can't use $ua->mirror
         $response = $ua->get($url, ':content_file' => "$fname");
     }
     if (my $died = $response->header('X-Died')) {
