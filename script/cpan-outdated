@@ -7,11 +7,11 @@ use File::Temp;
 use File::Spec;
 use Config;
 use version;
-use LWP::Simple ();
 use IO::Zlib;
 use CPAN::DistnameInfo;
 use Module::CoreList ();
 use Module::Metadata;
+use URI;
 use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.28";
@@ -20,11 +20,13 @@ my $mirror = 'http://www.cpan.org/';
 my $quote = WIN32 ? q/"/ : q/'/;
 my $local_lib;
 my $self_contained = 0;
+my $index_file;
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \my $help,
     'verbose'         => \my $verbose,
     'm|mirror=s'      => \$mirror,
+    'index'           => \$index_file,
     'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
     'l|local-lib=s'   => \$local_lib,
@@ -41,6 +43,11 @@ pod2usage() if $help;
 
 $mirror =~ s:/$::;
 my $index_url = "${mirror}/modules/02packages.details.txt.gz";
+$index_url = URI->new($index_url);
+if ($index_url->isa('URI::file')) {
+    die '--index is incompatible with a file:// mirror' if defined $index_file;
+    $index_file = $index_url->file
+}
 
 my $core_modules = $Module::CoreList::version{$]};
 
@@ -53,10 +60,14 @@ sub main {
     my @libpath = make_inc($local_lib, $self_contained);
     # warn join("\n", @libpath);
 
-    my $tmpfile = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
-    getstore($index_url, $tmpfile->filename);
+    if (   !defined($index_file)
+        || ! -e $index_file || -z $index_file
+        || !$index_url->isa('URI::file')) {
 
-    my $fh = zopen($tmpfile) or die "cannot open $tmpfile";
+        $index_file = get_index($index_url, $index_file)
+    }
+
+    my $fh = zopen($index_file) or die "cannot open $index_file";
     # skip header part
     while (my $line = <$fh>) {
         last if $line eq "\n";
@@ -162,25 +173,38 @@ sub which {
     return;
 }
 
-sub getstore {
+# Return the $fname (a generated File::Temp object if not provided)
+sub get_index {
     my ($url, $fname) = @_;
+    require LWP::UserAgent;
     my $ua = LWP::UserAgent->new(
         parse_head => 0,
     );
     $ua->env_proxy();
-    my $request = HTTP::Request->new(GET => $url);
-    my $response = $ua->request($request, $fname);
-    if (my $died = $response->header('X-Died')) {
-        die "Cannot getstore $url to $fname: $died";
-    } elsif ($response->code == 200) {
-        return 1;
+    $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz') unless defined $fname;
+    my $response;
+    # If the file is not empty, use it as a local cached copy
+    if (-s "$fname") {
+        $response = $ua->mirror($url, "$fname"); # Explicitely stringify
     } else {
-        die "Cannot getstore $url to $fname: " . $response->status_line;
+        # If the file is empty we do not trust its timestamp (as it may just
+        # have been created if a temp file) so we can't use $ua->mirror
+        $response = $ua->get($url, ':content_file' => "$fname");
     }
+    if (my $died = $response->header('X-Died')) {
+        die "Cannot get_index $url to $fname: $died";
+    # 304 = "Not Modified" (returned if we are mirroring)
+    } elsif (! $response->is_success && $response->code != 304) {
+        die "Cannot get_index $url to $fname: " . $response->status_line;
+    }
+    #print "$fname ", $response->status_line, "\n";
+    # Return the filename
+    $fname
 }
 
 sub zopen {
-    IO::Zlib->new($_[0], "rb");
+    # Explicitely stringify the filename as it may be a File::Temp object
+    IO::Zlib->new("$_[0]", "rb");
 }
 
 sub make_inc {

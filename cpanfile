@@ -5,6 +5,7 @@ requires 'IO::Zlib';
 requires 'LWP';
 requires 'Module::CoreList';
 requires 'Module::Metadata', '1.000007';
+requires 'URI';
 requires 'local::lib', '1.006008';
 requires 'version';
 
