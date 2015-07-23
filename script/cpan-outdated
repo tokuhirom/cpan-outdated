@@ -78,6 +78,8 @@ sub main {
     LINES: while (my $line = <$fh>) {
         my ($pkg, $version, $dist) = split /\s+/, $line;
         next if $version eq 'undef';
+        # The note below about the latest version heuristics applies here too
+        next if $seen{$dist};
 
         # $Mail::SpamAssassin::Conf::VERSION is 'bogus'
         # https://rt.cpan.org/Public/Bug/Display.html?id=73465
@@ -119,7 +121,7 @@ sub main {
             my $inst_version = $meta->version($pkg);
             next unless defined $inst_version;
             if (compare_version($inst_version, $version)) {
-                next if $seen{$dist}++;
+                $seen{$dist}++;
                 if ($verbose) {
                     printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
                 } elsif ($print_package) {
