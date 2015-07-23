@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use ExtUtils::Installed;
 use Getopt::Long;
-use Pod::Usage;
 use File::Temp;
 use File::Spec;
 use Config;
@@ -22,9 +21,10 @@ my $quote = WIN32 ? q/"/ : q/'/;
 my $local_lib;
 my $self_contained = 0;
 my $index_file;
+my $help;
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
-    'h|help'          => \my $help,
+    'h|help'          => \$help,
     'verbose'         => \my $verbose,
     'm|mirror=s'      => \$mirror,
     'index'           => \$index_file,
@@ -39,8 +39,11 @@ Getopt::Long::GetOptions(
           . "cpanm cpan-listchanges # install from CPAN\n"
     },
     'exclude-core' => \my $exclude_core,
-) or pod2usage();
-pod2usage() if $help;
+) or $help++;
+if ($help) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage();
+}
 
 $mirror =~ s:/$::;
 my $index_url = "${mirror}/modules/02packages.details.txt.gz";
