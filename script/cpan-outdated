@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use ExtUtils::Installed;
 use Getopt::Long;
-use File::Temp;
 use File::Spec;
 use Config;
 use version;
@@ -175,7 +174,10 @@ sub get_index {
         parse_head => 0,
     );
     $ua->env_proxy();
-    $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz') unless defined $fname;
+    unless (defined $fname) {
+        require File::Temp;
+        $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz')
+    }
     my $response;
     # If the file is not empty, use it as a local cached copy
     if (-s "$fname") {
