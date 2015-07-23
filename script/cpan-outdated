@@ -3,19 +3,16 @@ use strict;
 use warnings;
 use ExtUtils::Installed;
 use Getopt::Long;
-use File::Spec;
 use Config;
 use version;
 use IO::Zlib;
 use CPAN::DistnameInfo;
 use Module::Metadata;
 use URI;
-use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.28";
 
 my $mirror = 'http://www.cpan.org/';
-my $quote = WIN32 ? q/"/ : q/'/;
 my $local_lib;
 my $self_contained = 0;
 my $index_file;
@@ -154,21 +151,6 @@ sub permissive_filter {
     $_;
 }
 
-# taken from cpanminus
-sub which {
-    my($name) = @_;
-    my $exe_ext = $Config{_exe};
-    foreach my $dir(File::Spec->path){
-        my $fullpath = File::Spec->catfile($dir, $name);
-        if (-x $fullpath || -x ($fullpath .= $exe_ext)){
-            if ($fullpath =~ /\s/ && $fullpath !~ /^$quote/) {
-                $fullpath = "$quote$fullpath$quote"
-            }
-            return $fullpath;
-        }
-    }
-    return;
-}
 
 # Return the $fname (a generated File::Temp object if not provided)
 sub get_index {
