@@ -8,7 +8,6 @@ use Config;
 use version;
 use IO::Zlib;
 use CPAN::DistnameInfo;
-use Module::CoreList ();
 use Module::Metadata;
 use URI;
 use constant WIN32 => $^O eq 'MSWin32';
@@ -52,7 +51,12 @@ if ($index_url->isa('URI::file')) {
     $index_file = $index_url->file
 }
 
-my $core_modules = $Module::CoreList::version{$]};
+my $core_modules;
+if ($exclude_core) {
+    require Module::CoreList;
+    no warnings 'once';
+    $core_modules = $Module::CoreList::version{$]};
+}
 
 unless ($ENV{HARNESS_ACTIVE}) {
     &main;
