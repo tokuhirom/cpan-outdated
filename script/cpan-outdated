@@ -63,6 +63,14 @@ sub modules_to_check {
     ExtUtils::Installed->new(skip_cwd => 1, inc_override => \@inc)->modules;
 }
 
+sub installed_version_for {
+    my($pkg, $inc) = @_;
+
+    local $SIG{__WARN__} = sub {};
+    my $meta = Module::Metadata->new_from_module($pkg, inc => $inc);
+    $meta ? $meta->version($pkg) : undef;
+}
+
 sub main {
     my @inc = make_inc($local_lib, $self_contained);
 
@@ -99,48 +107,19 @@ sub main {
         next if $exclude_core && exists $core_modules->{$pkg};
 
         next if $dist =~ m{/perl-[0-9._]+\.tar\.(gz|bz2)$};
-        (my $file = $pkg) =~ s!::!/!g;
-        $file = "${file}.pm";
-      SCAN_INC: for my $dir (@inc) {
-            my $path = "$dir/$file";
-            next SCAN_INC unless -f $path;
 
-            # ignore old distribution.
-            #   This is a heuristic approach. It is not a strict.
-            #   If you want a strict check, cpan-outdated looks 02packages.details.txt.gz twice.
-            #   It is too slow.
-            #
-            #   But, 02packages.details.txt.gz is sorted.
-            #   Submodules are listed after main module most of the time.
-            #   This strategy works well for now.
-            # ref https://github.com/tokuhirom/cpan-outdated/issues#issue/4
-            my $info = CPAN::DistnameInfo->new($dist);
-            if (my $latest = $dist_latest_version{$info->dist}) {
-                # $info->version < $latest
-                if (compare_version($info->version, $latest)) {
-                    # warn "SKIP old distribution ($pkg): $dist < ", $latest, "\n";
-                    next LINES; # skip old version
-                }
-            }
-            $dist_latest_version{$info->dist} = $info->version;
+        my $inst_version = installed_version_for($pkg, \@inc)
+            or next;
 
-            my $meta = do {
-                local $SIG{__WARN__} = sub {};
-                Module::Metadata->new_from_file($path);
-            };
-            my $inst_version = $meta->version($pkg);
-            next unless defined $inst_version;
-            if (compare_version($inst_version, $version)) {
-                $seen{$dist}++;
-                if ($verbose) {
-                    printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
-                } elsif ($print_package) {
-                    print "$pkg\n";
-                } else {
-                    print "$dist\n";
-                }
+        if (compare_version($inst_version, $version)) {
+            $seen{$dist}++;
+            if ($verbose) {
+                printf "%-30s %-7s %-7s %s\n", $pkg, $inst_version, $version, $dist;
+            } elsif ($print_package) {
+                print "$pkg\n";
+            } else {
+                print "$dist\n";
             }
-            last SCAN_INC;
         }
     }
 }
