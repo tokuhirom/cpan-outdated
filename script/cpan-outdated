@@ -3,28 +3,23 @@ use strict;
 use warnings;
 use ExtUtils::Installed;
 use Getopt::Long;
-use Pod::Usage;
-use File::Temp;
-use File::Spec;
 use Config;
 use version;
 use IO::Zlib;
 use CPAN::DistnameInfo;
-use Module::CoreList ();
 use Module::Metadata;
 use URI;
-use constant WIN32 => $^O eq 'MSWin32';
 
 our $VERSION = "0.29";
 
 my $mirror = 'http://www.cpan.org/';
-my $quote = WIN32 ? q/"/ : q/'/;
 my $local_lib;
 my $self_contained = 0;
 my $index_file;
+my $help;
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
-    'h|help'          => \my $help,
+    'h|help'          => \$help,
     'verbose'         => \my $verbose,
     'm|mirror=s'      => \$mirror,
     'index'           => \$index_file,
@@ -39,8 +34,11 @@ Getopt::Long::GetOptions(
           . "cpanm cpan-listchanges # install from CPAN\n"
     },
     'exclude-core' => \my $exclude_core,
-) or pod2usage();
-pod2usage() if $help;
+) or $help++;
+if ($help) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage();
+}
 
 $mirror =~ s:/$::;
 my $index_url = "${mirror}/modules/02packages.details.txt.gz";
@@ -50,7 +48,12 @@ if ($index_url->isa('URI::file')) {
     $index_file = $index_url->file
 }
 
-my $core_modules = $Module::CoreList::version{$]};
+my $core_modules;
+if ($exclude_core) {
+    require Module::CoreList;
+    no warnings 'once';
+    $core_modules = $Module::CoreList::version{$]};
+}
 
 unless ($ENV{HARNESS_ACTIVE}) {
     &main;
@@ -148,21 +151,6 @@ sub permissive_filter {
     $_;
 }
 
-# taken from cpanminus
-sub which {
-    my($name) = @_;
-    my $exe_ext = $Config{_exe};
-    foreach my $dir(File::Spec->path){
-        my $fullpath = File::Spec->catfile($dir, $name);
-        if (-x $fullpath || -x ($fullpath .= $exe_ext)){
-            if ($fullpath =~ /\s/ && $fullpath !~ /^$quote/) {
-                $fullpath = "$quote$fullpath$quote"
-            }
-            return $fullpath;
-        }
-    }
-    return;
-}
 
 # Return the $fname (a generated File::Temp object if not provided)
 sub get_index {
@@ -172,7 +160,10 @@ sub get_index {
         parse_head => 0,
     );
     $ua->env_proxy();
-    $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz') unless defined $fname;
+    unless (defined $fname) {
+        require File::Temp;
+        $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz')
+    }
     my $response;
     # If the file is not empty, use it as a local cached copy
     if (-s "$fname") {
