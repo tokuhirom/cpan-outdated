@@ -4,7 +4,7 @@
       "Tokuhiro Matsuno"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.0.49, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Minilla/v2.4.3, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "perl_5"
    ],
@@ -13,11 +13,31 @@
       "version" : "2"
    },
    "name" : "cpan-outdated",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "CPAN::Meta" : "0",
-            "Module::Build" : "0.4"
+            "Module::Build::Tiny" : "0.035"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.04",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
          }
       },
       "runtime" : {
@@ -27,6 +47,7 @@
             "LWP" : "0",
             "Module::CoreList" : "0",
             "Module::Metadata" : "1.000007",
+            "URI" : "0",
             "local::lib" : "1.006008",
             "perl" : "5.008001",
             "version" : "0"
@@ -45,5 +66,20 @@
          "web" : "https://github.com/tokuhirom/cpan-outdated"
       }
    },
-   "version" : "0.28"
+   "version" : "0.29",
+   "x_contributors" : [
+      "Jesse Luehrs <doy@tozt.net>",
+      "Fuji, Goro <gfuji@cpan.org>",
+      "Masahiro Chiba <chiba@everqueue.com>",
+      "kmx <kmx@volny.cz>",
+      "Olaf Alders <olaf@wundersolutions.com>",
+      "Paul Findlay <paul@findlay.net.nz>",
+      "Sharl Morlaroll <sharl_github@haun.org>",
+      "Oleg Gashev <oleg@gashev.net>",
+      "David Steinbrunner <dsteinbrunner@pobox.com>",
+      "opendevnet <grtodd@gmail.com>",
+      "Olivier Mengué <dolmen@cpan.org>",
+      "Tatsuhiko Miyagawa <miyagawa@bulknews.net>",
+      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
+   ]
 }

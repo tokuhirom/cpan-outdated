@@ -4,7 +4,7 @@ App::cpanoutdated - detect outdated CPAN modules in your environment.
 
 # DESCRIPTION
 
-see [cpan-outdated](http://search.cpan.org/perldoc?cpan-outdated).
+see [cpan-outdated](https://metacpan.org/pod/cpan-outdated).
 
 # AUTHOR
 
@@ -18,6 +18,6 @@ This library is free software; you can redistribute it and/or modify it under th
 
 # SEE ALSO
 
-[CPAN](http://search.cpan.org/perldoc?CPAN)
+[CPAN](https://metacpan.org/pod/CPAN)
 
-[App::cpanminus](http://search.cpan.org/perldoc?App::cpanminus)
+[App::cpanminus](https://metacpan.org/pod/App::cpanminus)
