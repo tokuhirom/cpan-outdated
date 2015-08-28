@@ -155,11 +155,8 @@ sub permissive_filter {
 # Return the $fname (a generated File::Temp object if not provided)
 sub get_index {
     my ($url, $fname) = @_;
-    require LWP::UserAgent;
-    my $ua = LWP::UserAgent->new(
-        parse_head => 0,
-    );
-    $ua->env_proxy();
+    require HTTP::Tiny;
+    my $ua = HTTP::Tiny->new;
     unless (defined $fname) {
         require File::Temp;
         $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz')
@@ -170,16 +167,16 @@ sub get_index {
         $response = $ua->mirror($url, "$fname"); # Explicitely stringify
     } else {
         # If the file is empty we do not trust its timestamp (as it may just
-        # have been created if a temp file) so we can't use $ua->mirror
-        $response = $ua->get($url, ':content_file' => "$fname");
+        # have been created if a temp file) so set a custom If-Modified-Since
+        $response = $ua->mirror($url, "$fname", {headers => {'if-modified-since' => 'invalid date'}});
     }
-    if (my $died = $response->header('X-Died')) {
-        die "Cannot get_index $url to $fname: $died";
-    # 304 = "Not Modified" (returned if we are mirroring)
-    } elsif (! $response->is_success && $response->code != 304) {
-        die "Cannot get_index $url to $fname: " . $response->status_line;
+    if ($response->{status} == 599) {
+        die "Cannot get_index $url to $fname: $response->{content}";
+    # 304 = "Not Modified" is still a success since we are mirroring
+    } elsif (! $response->{success}) {
+        die "Cannot get_index $url to $fname: $response->{status} $response->{reason}";
     }
-    #print "$fname ", $response->status_line, "\n";
+    #print "$fname $response->{status} $response->{reason}\n";
     # Return the filename
     $fname
 }
