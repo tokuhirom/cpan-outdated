@@ -22,7 +22,7 @@ Getopt::Long::GetOptions(
     'h|help'          => \$help,
     'verbose'         => \my $verbose,
     'm|mirror=s'      => \$mirror,
-    'index'           => \$index_file,
+    'index=s'         => \$index_file,
     'p|print-package' => \my $print_package,
     'I=s'             => sub { die "this option was deprecated" },
     'l|local-lib=s'   => \$local_lib,
