@@ -1,8 +1,8 @@
 requires 'perl', '5.008001';
 
 requires 'CPAN::DistnameInfo', '0.1';
+requires 'HTTP::Tiny', '0.012';
 requires 'IO::Zlib';
-requires 'LWP';
 requires 'Module::CoreList';
 requires 'Module::Metadata', '1.000007';
 requires 'URI';
