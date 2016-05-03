@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.30 2016-05-03T23:29:25Z
     - Use HTTP::Tiny instead of LWP::UserAgent (grinnz, dolmen)
     - Lazy load the modules the script optionally uses (dolmen)
     - Meta: declare dependencies including from perl core
