@@ -43,10 +43,14 @@
       "runtime" : {
          "requires" : {
             "CPAN::DistnameInfo" : "0.1",
+            "ExtUtils::Installed" : "0",
+            "File::Temp" : "0",
+            "Getopt::Long" : "0",
+            "HTTP::Tiny" : "0.012",
             "IO::Zlib" : "0",
-            "LWP" : "0",
             "Module::CoreList" : "0",
             "Module::Metadata" : "1.000007",
+            "Pod::Usage" : "0",
             "URI" : "0",
             "local::lib" : "1.006008",
             "perl" : "5.008001",
