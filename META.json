@@ -70,7 +70,7 @@
          "web" : "https://github.com/tokuhirom/cpan-outdated"
       }
    },
-   "version" : "0.29",
+   "version" : "0.30",
    "x_contributors" : [
       "Jesse Luehrs <doy@tozt.net>",
       "Fuji, Goro <gfuji@cpan.org>",
