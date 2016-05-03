@@ -105,7 +105,7 @@ sub main {
         # $Mail::SpamAssassin::Conf::VERSION is 'bogus'
         # https://rt.cpan.org/Public/Bug/Display.html?id=73465
         next unless $version =~ /[0-9]/;
-        
+
         # if excluding core modules
         next if $exclude_core && exists $core_modules->{$pkg};
 
@@ -255,11 +255,11 @@ distro format, i.e: C<A/AU/AUTHOR/Distribution-Name-0.10.tar.gz> so
 you can pipe into CPAN installers, but with C<-p> option it can be
 tweaked to print the module's package names.
 
-If you wish to manage a set of modules separately from your system  
-perl installation and not install newer versions of "dual life modules" 
-that are distributed with perl, the C<--exclude-core> option will make 
-cpan-outdated ignore changes to core modules. Used with tools like 
-cpanm and its C<-L --local-lib-contained> and C<--self-contained> options, 
+If you wish to manage a set of modules separately from your system
+perl installation and not install newer versions of "dual life modules"
+that are distributed with perl, the C<--exclude-core> option will make
+cpan-outdated ignore changes to core modules. Used with tools like
+cpanm and its C<-L --local-lib-contained> and C<--self-contained> options,
 this facilitates maintaining updates on standalone sets of modules.
 
 For some tools such as L<cpanm> installing from packages could be a
