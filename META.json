@@ -4,7 +4,7 @@
       "Tokuhiro Matsuno"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.4.3, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.0.1, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -82,8 +82,12 @@
       "Oleg Gashev <oleg@gashev.net>",
       "David Steinbrunner <dsteinbrunner@pobox.com>",
       "opendevnet <grtodd@gmail.com>",
-      "Olivier Mengué <dolmen@cpan.org>",
       "Tatsuhiko Miyagawa <miyagawa@bulknews.net>",
-      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
-   ]
+      "Joenio Costa <joenio@colivre.coop.br>",
+      "Tatsuhiko Miyagawa <miyagawa@gmail.com>",
+      "Dan Book <grinnz@grinnz.com>",
+      "Tokuhiro Matsuno <tokuhirom@gmail.com>",
+      "Olivier Mengué <dolmen@cpan.org>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27400"
 }
