@@ -157,18 +157,32 @@ sub get_index {
     my ($url, $fname) = @_;
     require HTTP::Tiny;
     my $ua = HTTP::Tiny->new;
-    unless (defined $fname) {
-        require File::Temp;
-        $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz')
-    }
     my $response;
-    # If the file is not empty, use it as a local cached copy
-    if (-s "$fname") {
-        $response = $ua->mirror($url, "$fname"); # Explicitely stringify
+    if (defined $fname) {
+        # If the file is not empty, use it as a local cached copy
+        if (-s $fname) {
+            $response = $ua->mirror($url, $fname);
+        } else {
+            # If the file is empty we do not trust its timestamp
+            # so set a custom If-Modified-Since (Perl 5.0 release)
+            $response = $ua->mirror($url, $fname,
+                {
+                    headers => {
+                        'if-modified-since' => 'Wed, 19 Oct 1994 17:18:57 GMT',
+                    },
+                });
+        }
     } else {
-        # If the file is empty we do not trust its timestamp (as it may just
-        # have been created if a temp file) so set a custom If-Modified-Since
-        $response = $ua->mirror($url, "$fname", {headers => {'if-modified-since' => 'invalid date'}});
+        require File::Temp;
+        $fname = File::Temp->new(UNLINK => 1, SUFFIX => '.gz');
+        binmode $fname;
+        $response = $ua->request(
+            'GET' => $url,
+            {
+                data_callback => sub { print {$fname} $_[0] },
+            }
+        );
+        close $fname;
     }
     if ($response->{status} == 599) {
         die "Cannot get_index $url to $fname: $response->{content}";
@@ -177,7 +191,7 @@ sub get_index {
         die "Cannot get_index $url to $fname: $response->{status} $response->{reason}";
     }
     #print "$fname $response->{status} $response->{reason}\n";
-    # Return the filename
+    # Return the filename (which might be a File::Temp object)
     $fname
 }
 
