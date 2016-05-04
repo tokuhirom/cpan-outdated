@@ -62,8 +62,16 @@ unless ($ENV{HARNESS_ACTIVE}) {
 
 sub modules_to_check {
     my @inc = @_;
-    # TODO: if you want to filter the target modules, you can change them here.
-    ExtUtils::Installed->new(skip_cwd => 1, inc_override => \@inc)->modules;
+    my @modules =
+        ExtUtils::Installed->new(skip_cwd => 1, inc_override => \@inc)->modules;
+    # As core modules may not have been listed by EUI because they lack
+    # .packlist, we add them from Module::CoreList
+    if (!$exclude_core || ($local_lib && !$self_contained)) {
+        require Module::CoreList;
+        # This adds duplicates, but they are removed by the caller
+        push @modules, keys %{ $Module::CoreList::version{$]} };
+    }
+    (@modules)
 }
 
 sub installed_version_for {
