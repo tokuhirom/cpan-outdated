@@ -1,4 +1,6 @@
 {{$NEXT}}
+    - Check also core modules (unless explicitely excluded) to report
+      dual-life (core+CPAN) modules #32
 
 0.30 2016-05-03T23:29:25Z
     - Use HTTP::Tiny instead of LWP::UserAgent (grinnz, dolmen)
