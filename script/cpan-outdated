@@ -236,10 +236,10 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
 =head1 SYNOPSIS
 
-    # print the list of distribution that contains outdated modules
+    # print a list of distributions that contain outdated modules
     % cpan-outdated
 
-    # print the list of outdated modules in packages
+    # print a list of outdated modules in packages
     % cpan-outdated -p
 
     # verbose
@@ -264,17 +264,17 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
 =head1 DESCRIPTION
 
-This script prints the list of outdated CPAN modules in your machine.
+This script prints a list of outdated CPAN modules on your machine.
 
-It's same feature of 'CPAN::Shell->r', but C<cpan-outdated> is much faster and uses less memory.
+This is the same feature as 'CPAN::Shell->r', but C<cpan-outdated> is much faster and uses less memory.
 
-This script can be integrated with L<cpanm> command.
+This script can be integrated with the L<cpanm> command.
 
 =head1 PRINTING PACKAGES VS DISTRIBUTIONS
 
 This script by default prints the outdated distribution as in the CPAN
 distro format, i.e: C<A/AU/AUTHOR/Distribution-Name-0.10.tar.gz> so
-you can pipe into CPAN installers, but with C<-p> option it can be
+you can pipe it into CPAN installers, but with the C<-p> option it can be
 tweaked to print the module's package names.
 
 If you wish to manage a set of modules separately from your system
@@ -284,9 +284,9 @@ cpan-outdated ignore changes to core modules. Used with tools like
 cpanm and its C<-L --local-lib-contained> and C<--self-contained> options,
 this facilitates maintaining updates on standalone sets of modules.
 
-For some tools such as L<cpanm> installing from packages could be a
+For some tools, such as L<cpanm>, installing from packages could be a
 bit more useful since you can track to see the old version number
-where you upgrade from.
+which you upgrade from.
 
 =head1 AUTHOR
 
