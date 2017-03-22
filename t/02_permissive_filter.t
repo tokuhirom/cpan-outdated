@@ -4,7 +4,7 @@ use Test::More tests => 6;
 
 $ENV{HARNESS_ACTIVE} ||= 1;
 
-do 'script/cpan-outdated' or die;
+do './script/cpan-outdated' or die;
 is permissive_filter('V2.0'), '2.0';
 is permissive_filter('0_02'), '0.02';
 is permissive_filter('0.035-withoutworldwriteables'), '0.035';
