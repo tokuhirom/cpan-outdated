@@ -21,3 +21,5 @@ This library is free software; you can redistribute it and/or modify it under th
 [CPAN](https://metacpan.org/pod/CPAN)
 
 [App::cpanminus](https://metacpan.org/pod/App::cpanminus)
+
+[App::DualLivedList](https://metacpan.org/pod/App::DualLivedList)

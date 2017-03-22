@@ -29,4 +29,6 @@ L<CPAN>
 
 L<App::cpanminus>
 
+L<App::DualLivedList>
+
 =cut
