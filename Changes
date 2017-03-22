@@ -1,4 +1,6 @@
 {{$NEXT}}
+    - Tests: add compatibility with dot-less-@INC perls (5.25.11+) #36, #37
+      (syohex)
 
 0.31 2016-05-26T20:38:01Z
     - Check also core modules (unless explicitely excluded) to report
