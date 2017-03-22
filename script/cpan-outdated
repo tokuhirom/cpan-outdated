@@ -244,7 +244,7 @@ cpan-outdated - detect outdated CPAN modules in your environment
 
     # verbose
     % cpan-outdated --verbose
-    
+
     # ignore core modules (do not update dual life modules)
     % cpan-outdated --exclude-core
 
