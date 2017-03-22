@@ -10,7 +10,7 @@ use CPAN::DistnameInfo;
 use Module::Metadata;
 use URI;
 
-our $VERSION = "0.31";
+our $VERSION = "0.32";
 
 my $mirror = 'http://www.cpan.org/';
 my $local_lib;

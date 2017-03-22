@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.32 2017-03-22T09:42:04Z
     - Tests: add compatibility with dot-less-@INC perls (5.25.11+) #36, #37
       (syohex)
 
