@@ -1,0 +1,20 @@
+
+Successfully installed Math-BigInt-1.999813
+
+regexp: Math::BigInt is up to date. \((\S+?)\)
+
+
+generator:<<CODE
+
+my $latest_version = capture()->[0];
+
+[
+  "begin:",
+  "start",
+  "P/PJ/PJACKLAM/Math-BigInt-$latest_version.tar.gz",
+  "end",
+  "end:"
+]
+
+CODE
+
