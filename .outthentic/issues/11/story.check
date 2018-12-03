@@ -1,0 +1,19 @@
+Successfully installed Tk-804.033
+1 distribution installed
+
+regexp: Tk is up to date. \((\S+?)\)
+
+generator:<<CODE
+
+my $latest_version = capture()->[0];
+
+[
+  "begin:",
+  "start",
+  "S/SR/SREZIC/Tk-$latest_version.tar.gz",
+  "end",
+  "end:"
+]
+
+CODE
+
