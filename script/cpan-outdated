@@ -17,6 +17,7 @@ my $local_lib;
 my $self_contained = 0;
 my $index_file;
 my $help;
+my $only;
 Getopt::Long::Configure("bundling");
 Getopt::Long::GetOptions(
     'h|help'          => \$help,
@@ -28,6 +29,7 @@ Getopt::Long::GetOptions(
     'l|local-lib=s'   => \$local_lib,
     'L|local-lib-contained=s' =>
       sub { $local_lib = $_[1]; $self_contained = 1; },
+    'only!'           => \$only,
     'compare-changes' => sub {
         die "--compare-changes option was deprecated.\n"
           . "You can use 'cpan-listchanges `cpan-outdated -p`' instead.\n"
@@ -83,7 +85,7 @@ sub installed_version_for {
 }
 
 sub main {
-    my @inc = make_inc($local_lib, $self_contained);
+    my @inc = make_inc($local_lib, $self_contained, $only);
 
     if (   !defined($index_file)
         || ! -e $index_file || -z $index_file
@@ -209,7 +211,7 @@ sub zopen {
 }
 
 sub make_inc {
-    my ($base, $self_contained) = @_;
+    my ($base, $self_contained, $only) = @_;
 
     if ($base) {
         require local::lib;
@@ -217,7 +219,9 @@ sub make_inc {
             local::lib->install_base_perl_path($base),
             local::lib->install_base_arch_path($base),
         );
-        if ($self_contained) {
+	if ($only) {
+	    # Only the local::lib stuff
+	} elsif ($self_contained) {
             push @modified_inc, @Config{qw(privlibexp archlibexp)};
         } else {
             push @modified_inc, @INC;
@@ -254,6 +258,9 @@ cpan-outdated - detect outdated CPAN modules in your environment
     # additional module path(same as cpanminus)
     % cpan-outdated -l extlib/
     % cpan-outdated -L extlib/
+
+    # only local::lib modules
+    % cpan-outdated -l perl5 --only
 
     # install with cpan
     % cpan-outdated | xargs cpan -i
